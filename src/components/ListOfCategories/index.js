@@ -1,14 +1,60 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Category} from '../Category';
 import {List, Item} from './styles';
-import {categories} from '../../../api/db.json';
+
+function useCategoriesData() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(function () {
+    setLoading(true);
+    fetch('https://petgram-server-jrdiazr-k177zqhah.now.sh/categories')
+      .then(res => res.json())
+      .then(response => {
+        setCategories(response);
+        setLoading(false);
+      })
+  },[])
+
+  return {categories, loading};
+}
 
 export const ListOfCategories = () => {
-  return (
-    <List>
+  const {categories, loading} = useCategoriesData();
+
+  const [showFixed, setFixed] = useState(false);
+
+
+  useEffect(function () {
+    const onScroll = e => {
+      const newShowFixed = window.scrollY > 200
+      showFixed !== newShowFixed && setFixed(newShowFixed)
+    }
+
+    document.addEventListener('scroll', onScroll);
+
+    return () => document.removeEventListener('scroll', onScroll);
+  },[showFixed])
+
+  const renderList = (fixed)=> (
+    <List fixed={fixed}>
       {
-        categories.map(category => <Item key={category.id}><Category {...category}/></Item>)
+       loading 
+       ? <Item key='loading'><Category/></Item>
+       : categories.map(category => <Item key={category.id}><Category {...category}/></Item>)
       }  
-    </List>    
+    </List>
+  )
+
+  return (
+    <>
+      {
+        renderList()
+      }
+      {
+        showFixed && renderList(true)
+      }
+
+    </>
   );
 }

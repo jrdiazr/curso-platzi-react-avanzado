@@ -1,14 +1,12 @@
-import React from 'react';
+import React from "react";
 const IMG = "https://i.imgur.com/dJa0Hpl.jpg";
-import {Anchor, Image} from './styles';
+import { Link, Image } from "./styles";
 
-export const Category = ({cover = IMG, path, emoji = '?'}) => {
-  console.log("Cat");
-  
+export const Category = ({ cover = IMG, path = "#", emoji = "?" }) => {
   return (
-    <Anchor href={path}>
-      <Image src={cover}/>
+    <Link to={path}>
+      <Image src={cover} />
       {emoji}
-    </Anchor>
+    </Link>
   );
-}
+};

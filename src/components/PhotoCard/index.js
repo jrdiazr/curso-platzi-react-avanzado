@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 const IMG =
   "https://res.cloudinary.com/midudev/image/upload/w_300/q_80/v1560262103/dogs.png";
-import { Article, Img, Button, ImgWrapper } from "./styles";
-import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
+import { Article, Img, ImgWrapper } from "./styles";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useNearScreen } from "../../hooks/useNearScreen";
+import { FavButton } from "../FavButton";
+import { ToggleLikeMutation } from "../../container/ToggleLikeMutation";
+import { Link } from "@reach/router";
 
 export const PhotoCard = ({ id, likes = 0, src = IMG }) => {
   const [show, ref] = useNearScreen();
@@ -15,19 +17,31 @@ export const PhotoCard = ({ id, likes = 0, src = IMG }) => {
     <Article ref={ref}>
       {show && (
         <>
-          <a href={`/detail/${id}`}>
+          <Link to={`/detail/${id}`}>
             <ImgWrapper>
               <Img src={src} />
             </ImgWrapper>
-          </a>
-          <Button onClick={() => setLiked(!liked)}>
-            {liked ? (
-              <MdFavorite size="32px" />
-            ) : (
-              <MdFavoriteBorder size="32px" />
-            )}
-            {likes} likes!
-          </Button>
+          </Link>
+          <ToggleLikeMutation>
+            {(toggleLike) => {
+              const handleFavClick = () => {
+                !liked &&
+                  toggleLike({
+                    variables: {
+                      input: { id },
+                    },
+                  });
+                setLiked(!liked);
+              };
+              return (
+                <FavButton
+                  liked={liked}
+                  likes={likes}
+                  onClick={handleFavClick}
+                />
+              );
+            }}
+          </ToggleLikeMutation>
         </>
       )}
     </Article>

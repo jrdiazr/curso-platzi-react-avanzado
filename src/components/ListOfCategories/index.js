@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import {Category} from '../Category';
-import {List, Item} from './styles';
+import React, { useState, useEffect } from "react";
+import { Category } from "../Category";
+import { List, Item } from "./styles";
 
 function useCategoriesData() {
   const [categories, setCategories] = useState([]);
@@ -8,53 +8,56 @@ function useCategoriesData() {
 
   useEffect(function () {
     setLoading(true);
-    fetch('https://petgram-server-jrdiazr-k177zqhah.now.sh/categories')
-      .then(res => res.json())
-      .then(response => {
+    fetch("https://petgram-server-jrdiazr-k177zqhah.now.sh/categories")
+      .then((res) => res.json())
+      .then((response) => {
         setCategories(response);
         setLoading(false);
-      })
-  },[])
+      });
+  }, []);
 
-  return {categories, loading};
+  return { categories, loading };
 }
 
 export const ListOfCategories = () => {
-  const {categories, loading} = useCategoriesData();
+  const { categories, loading } = useCategoriesData();
 
   const [showFixed, setFixed] = useState(false);
 
+  useEffect(
+    function () {
+      const onScroll = (e) => {
+        const newShowFixed = window.scrollY > 200;
+        showFixed !== newShowFixed && setFixed(newShowFixed);
+      };
 
-  useEffect(function () {
-    const onScroll = e => {
-      const newShowFixed = window.scrollY > 200
-      showFixed !== newShowFixed && setFixed(newShowFixed)
-    }
+      document.addEventListener("scroll", onScroll);
 
-    document.addEventListener('scroll', onScroll);
+      return () => document.removeEventListener("scroll", onScroll);
+    },
+    [showFixed]
+  );
 
-    return () => document.removeEventListener('scroll', onScroll);
-  },[showFixed])
-
-  const renderList = (fixed)=> (
+  const renderList = (fixed) => (
     <List fixed={fixed}>
-      {
-       loading 
-       ? <Item key='loading'><Category/></Item>
-       : categories.map(category => <Item key={category.id}><Category {...category}/></Item>)
-      }  
+      {loading ? (
+        <Item key="loading">
+          <Category />
+        </Item>
+      ) : (
+        categories.map((category) => (
+          <Item key={category.id}>
+            <Category {...category} path={`/pet/${category.id}`} />
+          </Item>
+        ))
+      )}
     </List>
-  )
+  );
 
   return (
     <>
-      {
-        renderList()
-      }
-      {
-        showFixed && renderList(true)
-      }
-
+      {renderList()}
+      {showFixed && renderList(true)}
     </>
   );
-}
+};

@@ -10,7 +10,6 @@ import { User } from "./pages/User";
 import { NotRegisterUser } from "./pages/NotRegisterUser";
 import Context from "./Context";
 
-
 const App = () => {
   return (
     <>

@@ -6,6 +6,7 @@ import { useNearScreen } from "../../hooks/useNearScreen";
 import { FavButton } from "../FavButton";
 import { ToggleLikeMutation } from "../../container/ToggleLikeMutation";
 import { Link } from "@reach/router";
+import Proptypes from "prop-types";
 
 export const PhotoCard = ({ id, liked, likes = 0, src = IMG }) => {
   const [show, ref] = useNearScreen();
@@ -41,4 +42,20 @@ export const PhotoCard = ({ id, liked, likes = 0, src = IMG }) => {
       )}
     </Article>
   );
+};
+
+PhotoCard.propTypes = {
+  id: Proptypes.string.isRequired,
+  liked: Proptypes.bool.isRequired,
+  src: Proptypes.string.isRequired,
+  likes: function (props, propName, componentName) {
+    const propValue = props[propName];
+    if (propValue === undefined) {
+      return new Error(`El valor de ${propName} debe ser definido`);
+    }
+
+    if (propValue < 0) {
+      return new Error(`El valor de ${propName} debe ser mayor a 0`);
+    }
+  },
 };
